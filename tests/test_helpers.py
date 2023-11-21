@@ -1,10 +1,22 @@
+"""
+Test of helpers
+
+Module to test functionalities of the helper functions
+
+Author: brenoAV
+Last Modified: 11-21-2023
+"""
 import json
 from tempfile import NamedTemporaryFile
 
 import pytest
 from pyspark.sql import DataFrame, SparkSession
 
-from src.helpers import get_channel_title_by_id, get_map_category_name_by_id
+from src.helpers import (
+    get_channel_title_by_id,
+    get_map_category_name_by_id,
+    title_tokenize,
+)
 
 
 @pytest.fixture(scope="session")
@@ -78,7 +90,7 @@ def test_get_map_category_name_by_id_invalid():
             {"id": "2", "snippet": {"title": "Autos & Vehicles"}},
             {"id": "10", "snippet": {"title": "Music"}},
         ]
-    }
+    `date +%Y-%m-%d`}
 
     with NamedTemporaryFile(
         suffix=".json", mode="w", encoding="utf-8", delete=True
@@ -88,3 +100,21 @@ def test_get_map_category_name_by_id_invalid():
 
         with pytest.raises(KeyError):
             get_map_category_name_by_id(file.name)
+
+
+def test_clean_title():
+    title = "França 14 x 0 Gibaltrar pelas Eliminatórias da Euro: melhores \
+momentos do show de Mbappé e companhia"
+    expected_title = [
+        "frança",
+        "x",
+        "gibaltrar",
+        "eliminatórias",
+        "euro",
+        "melhores",
+        "momentos",
+        "show",
+        "mbappé",
+        "companhia",
+    ]
+    assert title_tokenize(title) == expected_title

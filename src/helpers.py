@@ -4,12 +4,15 @@ Helpers
 This module provide basic tasks to work with YouTube data
 
 Author: brenoAV
-Last Modified: 11-18-2023
+Last Modified: 11-21-2023
 """
 import json
 
-import requests
+import nltk
+from nltk.tokenize import word_tokenize
 from pyspark.sql import DataFrame
+
+nltk.download("punkt", quiet=True)
 
 
 def get_channel_title_by_id(channel_id: str, map_id_title: DataFrame) -> str:
@@ -62,8 +65,46 @@ def get_map_category_name_by_id(filename: str) -> dict:
     return map_category_name_by_id
 
 
-def get_channel_info_by_id(channel_id: str, key: str) -> str:
-    params = {"id": channel_id, "part": "snippet,statistics,status", "key": key}
-    url = "https://www.googleapis.com/youtube/v3/channels"
-    r = requests.get(url=url, params=params, timeout=5)
-    return r.json()
+def title_tokenize(title: str) -> list[str]:
+    """Generate a list with tokens extracted from the title (string)
+
+    Args:
+        title (str): the video title
+
+    Returns:
+        list[str]: list with the tokens extracted from the title
+    """
+    tokens = word_tokenize(title, language="portuguese")
+    tokens = list(map(lambda x: x.lower().strip(), tokens))
+    tokens = list(filter(lambda x: x.isalpha() or (x in ["!", "?"]), tokens))
+    # fmt: off
+    stop_words = ['a', 'à', 'ao', 'aos', 'as', 'às', 'da', 'com'
+                  'das', 'de', 'do', 'dos', 'e', 'é', 'em',
+                  'entre', 'era', 'eram', 'éramos', 'essa',
+                  'essas', 'esse', 'esses', 'esta', 'está',
+                  'estamos', 'estão', 'estar', 'estas', 'estava',
+                  'estavam', 'estávamos', 'este', 'esteja', 'estejam',
+                  'estejamos', 'estes', 'esteve', 'estive', 'estivemos',
+                  'estiver', 'estivera', 'estiveram', 'estivéramos', 'estiverem',
+                  'estivermos', 'estivesse', 'estivessem', 'estivéssemos',
+                  'fôramos', 'forem', 'formos', 'fosse', 'fossem', 'fôssemos',
+                  'há', 'haja', 'hajam', 'hajamos', 'hão', 'havemos', 'haver',
+                  'hei', 'houve', 'houvemos', 'houver', 'houvera', 'houverá',
+                  'houveram', 'houvéramos', 'houverão', 'houverei', 'houverem',
+                  'houveremos', 'houveria', 'houveriam', 'houveríamos', 'houvermos',
+                  'houvesse', 'houvessem', 'houvéssemos', 'isso', 'isto', 'lhe', 'lhes',
+                  'me', 'mesmo', 'na', 'nas', 'nem', 'no', 'nos', 'nós', 'num', 'numa',
+                  'o', 'os', 'ou', 'para', 'pela', 'pelas', 'pelo', 'pelos', 'por',
+                  'qual', 'quando', 'que', 'quem', 'são', 'se', 'seja', 'sejam',
+                  'sejamos', 'sem', 'ser', 'será', 'serão', 'serei', 'seremos', 'seria',
+                  'seriam', 'seríamos', 'seu', 'seus', 'só', 'somos', 'te', 'tem',
+                  'tém', 'terá', 'terão', 'terei', 'teremos', 'teria', 'teriam',
+                  'teríamos', 'teu', 'teus', 'teve', 'tinha', 'tinham', 'tínhamos',
+                  'tive', 'tivemos', 'tiver', 'tivera', 'tiveram', 'tivéramos',
+                  'tiverem', 'tivermos', 'tivesse', 'tivessem', 'tivéssemos', 'tu',
+                  'tua', 'tuas', 'um', 'uma', 'você', 'vocês', 'vos', 'com', 'mais',
+                  "the", "não", "como", "of", "foi", "fiz", "sobre", "mas", "após",
+                  "pra", "pro", "faz", "vai", "tudo"]
+    # fmt: on
+    tokens = list(filter(lambda word: word not in stop_words, tokens))
+    return tokens
