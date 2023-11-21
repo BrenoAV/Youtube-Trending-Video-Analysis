@@ -1,5 +1,17 @@
 # PySpark — YouTube Trending Video Analysis
 
+
+# Interesting Points
+
+1. The best time to release a video is 12:00 PM (Lunch time).
+2. The “worst” day to release a video is on Saturday.
+3. Tags apparently are not required to video go to trending state.
+4. For Brazil: The football (soccer) is incredible consumed until nowadays and minecraft contents.
+5. There are some correlations with the number of views with the likes, dislikes, and number of comments. The most correlated are the likes.
+6. Put a lot of exclamation mark in the title.
+
+# Summary
+
 Analysis of the YouTube trending video using the dataset provided by [Rishav Sharma - Kaggle](https://www.kaggle.com/datasets/rsrishav/youtube-trending-video-dataset). For that propose was used [PySpark](https://spark.apache.org/docs/latest/api/python/index.html) to process the data. The [Jupyter Notebok](./YoutubeTrendingVideoAnalysis.ipynb) contains my analysis of the data and can be done more analysis on top of.
 
 Note: If you want another country, change the [config.yml](./config.yml) file.
